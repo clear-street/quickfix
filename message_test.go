@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/quickfixgo/quickfix/datadictionary"
+	"github.com/clear-street/quickfix/datadictionary"
 )
 
 func BenchmarkParseMessage(b *testing.B) {

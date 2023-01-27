@@ -12,7 +12,7 @@ import (
 
 	proxyproto "github.com/armon/go-proxyproto"
 
-	"github.com/quickfixgo/quickfix/config"
+	"github.com/clear-street/quickfix/config"
 )
 
 // Acceptor accepts connections from FIX clients and manages the associated sessions.

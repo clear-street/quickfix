@@ -6,7 +6,7 @@ import (
 
 	"golang.org/x/net/proxy"
 
-	"github.com/quickfixgo/quickfix/config"
+	"github.com/clear-street/quickfix/config"
 )
 
 func loadDialerConfig(settings *SessionSettings) (dialer proxy.Dialer, err error) {
