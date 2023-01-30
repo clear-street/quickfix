@@ -373,6 +373,10 @@ func (m *Message) build() []byte {
 	return b.Bytes()
 }
 
+func (m *Message) ExposeBuild() []byte {
+	return m.build()
+}
+
 func (m *Message) cook() {
 	bodyLength := m.Header.length() + m.Body.length() + m.Trailer.length()
 	m.Header.SetInt(tagBodyLength, bodyLength)
