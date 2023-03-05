@@ -212,14 +212,14 @@ func ParseMessageWithDataDictionary(
 			trailerBytes = rawBytes
 			msg.Body.add(msg.fields[fieldIndex : fieldIndex+1])
 		}
-		if parsedFieldBytes.tag == tagCheckSum {
-			break
-		}
 
 		if !foundBody {
 			msg.bodyBytes = rawBytes
 		}
 
+		if parsedFieldBytes.tag == tagCheckSum {
+			break
+		}
 		fieldIndex++
 	}
 
