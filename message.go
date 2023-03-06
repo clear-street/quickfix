@@ -618,3 +618,16 @@ func (m *Message) cook() {
 	checkSum := (m.Header.total() + m.Body.total() + m.Trailer.total()) % 256
 	m.Trailer.SetString(tagCheckSum, formatCheckSum(checkSum))
 }
+
+func (m *Message) cookFromBodyBytes() {
+	bodyLength := m.Header.length() + len(m.bodyBytes) + m.Trailer.length()
+	m.Header.SetInt(tagBodyLength, bodyLength)
+
+	bodyTotal := 0
+	for _, b := range []byte(m.bodyBytes) {
+		bodyTotal += int(b)
+	}
+
+	checkSum := (m.Header.total() + bodyTotal + m.Trailer.total()) % 256
+	m.Trailer.SetString(tagCheckSum, formatCheckSum(checkSum))
+}
