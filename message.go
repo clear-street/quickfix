@@ -373,8 +373,10 @@ func (m *Message) build() []byte {
 	return b.Bytes()
 }
 
-func (m *Message) resendBuild() []byte {
-	m.resendCook()
+// introduced to work around issue with resending messages with repeating groups
+// issue described: https://github.com/quickfixgo/quickfix/issues/276
+func (m *Message) buildFromBodyBytes() []byte {
+	m.cookFromBodyBytes()
 
 	var b bytes.Buffer
 	m.Header.write(&b)
@@ -390,7 +392,7 @@ func (m *Message) cook() {
 	m.Trailer.SetString(tagCheckSum, formatCheckSum(checkSum))
 }
 
-func (m *Message) resendCook() {
+func (m *Message) cookFromBodyBytes() {
 	bodyLength := m.Header.length() + len(m.bodyBytes) + m.Trailer.length()
 	m.Header.SetInt(tagBodyLength, bodyLength)
 
