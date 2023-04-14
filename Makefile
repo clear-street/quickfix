@@ -23,7 +23,7 @@ linters-install:
 	}
 
 lint: linters-install
-	golangci-lint run
+	golangci-lint run -v
 
 # ---------------------------------------------------------------
 # Targets related to running acceptance tests -
