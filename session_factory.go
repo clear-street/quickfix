@@ -7,9 +7,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/quickfixgo/quickfix/config"
-	"github.com/quickfixgo/quickfix/datadictionary"
-	"github.com/quickfixgo/quickfix/internal"
+	"github.com/clear-street/quickfix/config"
+	"github.com/clear-street/quickfix/datadictionary"
+	"github.com/clear-street/quickfix/internal"
 )
 
 var dayLookup = map[string]time.Weekday{

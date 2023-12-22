@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/quickfixgo/quickfix/datadictionary"
+	"github.com/clear-street/quickfix/datadictionary"
 )
 
 type fieldTypeMap map[string]*datadictionary.FieldType
@@ -14,7 +14,7 @@ var (
 	GlobalFieldTypes       []*datadictionary.FieldType
 )
 
-//sort fieldtypes by name
+// sort fieldtypes by name
 type byFieldName []*datadictionary.FieldType
 
 func (n byFieldName) Len() int           { return len(n) }

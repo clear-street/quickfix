@@ -1,4 +1,4 @@
-module github.com/quickfixgo/quickfix
+module github.com/clear-street/quickfix
 
 go 1.18
 

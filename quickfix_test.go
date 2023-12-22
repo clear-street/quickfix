@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/quickfixgo/quickfix/internal"
+	"github.com/clear-street/quickfix/internal"
 )
 
 type QuickFIXSuite struct {
