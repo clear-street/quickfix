@@ -603,20 +603,13 @@ func (m *Message) build() []byte {
 // This func lets us pull the Message from the Store, parse it, update the Header, and then build it back into bytes using the original Body.
 // Note: The only standard non-Body group is NoHops.  If that is used in the Header, this workaround may fail.
 func (m *Message) buildWithBodyBytes(bodyBytes []byte) []byte {
-	m.cook()
+	m.cookFromBodyBytes()
 
 	var b bytes.Buffer
 	m.Header.write(&b)
 	b.Write(bodyBytes)
 	m.Trailer.write(&b)
 	return b.Bytes()
-}
-
-func (m *Message) cook() {
-	bodyLength := m.Header.length() + m.Body.length() + m.Trailer.length()
-	m.Header.SetInt(tagBodyLength, bodyLength)
-	checkSum := (m.Header.total() + m.Body.total() + m.Trailer.total()) % 256
-	m.Trailer.SetString(tagCheckSum, formatCheckSum(checkSum))
 }
 
 func (m *Message) cookFromBodyBytes() {
