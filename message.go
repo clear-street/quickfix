@@ -260,18 +260,28 @@ func doParsing(mp *msgParser) (err error) {
 			mp.trailerBytes = mp.rawBytes
 			mp.msg.Body.add(mp.msg.fields[mp.fieldIndex : mp.fieldIndex+1])
 		}
+<<<<<<< HEAD
 		if mp.parsedFieldBytes.tag == tagCheckSum {
 			break
 		}
+=======
+>>>>>>> origin/master
 
 		if !mp.foundBody {
 			mp.msg.bodyBytes = mp.rawBytes
 		}
 
+<<<<<<< HEAD
 		if mp.parsedFieldBytes.tag == tagXMLDataLen {
 			xmlDataLen, _ = mp.msg.Header.getIntNoLock(tagXMLDataLen)
 		}
 		mp.fieldIndex++
+=======
+		if parsedFieldBytes.tag == tagCheckSum {
+			break
+		}
+		fieldIndex++
+>>>>>>> origin/master
 	}
 
 	// This will happen if there are no fields in the body
@@ -597,6 +607,7 @@ func (m *Message) build() []byte {
 	return b.Bytes()
 }
 
+<<<<<<< HEAD
 // Constructs a []byte from a Message instance, using the given bodyBytes.
 // This is a workaround for the fact that we currently rely on the generated Message types to properly serialize/deserialize RepeatingGroups.
 // In other words, we cannot go from bytes to a Message then back to bytes, which is exactly what we need to do in the case of a Resend.
@@ -608,6 +619,16 @@ func (m *Message) buildWithBodyBytes(bodyBytes []byte) []byte {
 	var b bytes.Buffer
 	m.Header.write(&b)
 	b.Write(bodyBytes)
+=======
+// introduced to work around issue with resending messages with repeating groups
+// issue described: https://github.com/quickfixgo/quickfix/issues/276
+func (m *Message) buildFromBodyBytes() []byte {
+	m.cookFromBodyBytes()
+
+	var b bytes.Buffer
+	m.Header.write(&b)
+	b.Write(m.bodyBytes)
+>>>>>>> origin/master
 	m.Trailer.write(&b)
 	return b.Bytes()
 }
