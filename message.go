@@ -115,6 +115,9 @@ type Message struct {
 	// Slice of Bytes corresponding to the message body.
 	bodyBytes []byte
 
+	// keepBodyBytes makes build write bodyBytes as the body instead of serializing Body.
+	keepBodyBytes bool
+
 	// Field bytes as they appear in the raw message.
 	fields []TagValue
 }
@@ -149,10 +152,35 @@ func (m *Message) CopyInto(to *Message) {
 	to.ReceiveTime = m.ReceiveTime
 	to.bodyBytes = make([]byte, len(m.bodyBytes))
 	copy(to.bodyBytes, m.bodyBytes)
+	to.keepBodyBytes = m.keepBodyBytes
 	to.fields = make([]TagValue, len(m.fields))
 	for i := range to.fields {
 		to.fields[i].init(m.fields[i].tag, m.fields[i].value)
 	}
+}
+
+// ParseMessageForResend constructs a Message from the bytes of a message that was sent earlier, for sending it
+// again with Send or SendToTarget.
+//
+// Parsing without a data dictionary collapses repeating groups in Body, so the message is not built from
+// Body. It is sent with the body exactly as it was in rawMessage, and the header is built from the session as
+// for any message sent: MsgSeqNum and SendingTime are set by the session, and BodyLength and CheckSum are
+// computed from the body bytes. Header fields set on the returned message are sent. Changes to Body are not.
+// Body can be read, but repeating groups in it are not complete.
+func ParseMessageForResend(rawMessage []byte) (*Message, error) {
+	msg := NewMessage()
+	if err := ParseMessage(msg, bytes.NewBuffer(append([]byte(nil), rawMessage...))); err != nil {
+		return nil, err
+	}
+	if len(msg.bodyBytes) == 0 {
+		return nil, parseError{OrigError: "message has no body"}
+	}
+
+	// A message with a raw message answers String and Bytes with the bytes it was parsed from, ignoring
+	// changes made to its header.
+	msg.rawMessage = nil
+	msg.keepBodyBytes = true
+	return msg, nil
 }
 
 // ParseMessage constructs a Message from a byte slice wrapping a FIX message.
@@ -588,6 +616,10 @@ func formatCheckSum(value int) string {
 
 // Build constructs a []byte from a Message instance.
 func (m *Message) build() []byte {
+	if m.keepBodyBytes {
+		return m.buildWithBodyBytes(m.bodyBytes)
+	}
+
 	m.cook()
 
 	var b bytes.Buffer
