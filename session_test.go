@@ -17,6 +17,7 @@ package quickfix
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 	"time"
 
@@ -1325,4 +1326,25 @@ func (s *SessionSuite) TestSeqNumResetTime_NanoSeconds() {
 	s.session.CheckResetTime(s.session, after)
 	s.NextSenderMsgSeqNum(2)
 	s.NextTargetMsgSeqNum(1)
+}
+
+func (s *SessionSuite) TestQueueForSendWritesTheStoredBodyOfAMessageParsedForResend() {
+	stored := storedTradeReport()
+	msg, err := ParseMessageForResend([]byte(stored))
+	s.Require().NoError(err)
+	s.session.State = inSession{}
+	s.IncrNextSenderMsgSeqNum()
+	s.IncrNextSenderMsgSeqNum()
+
+	s.MockApp.On("ToApp").Return(nil)
+	s.Require().NoError(s.queueForSend(msg))
+
+	s.Require().Len(s.session.toSend, 1)
+	sent := s.session.toSend[0]
+	declaredLen, actualLen, declaredCk, computedCk := frameCheck(s.T(), sent)
+	s.Equal(actualLen, declaredLen)
+	s.Equal(computedCk, declaredCk)
+	s.Contains(string(sent), "\x0134=3\x01")
+	s.NotContains(string(sent), "\x0134=2\x01")
+	s.Contains(string(sent), stored[strings.Index(stored, "\x0122=")+1:strings.LastIndex(stored, "\x0110=")+1])
 }
